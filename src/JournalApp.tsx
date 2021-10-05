@@ -1,14 +1,11 @@
-import { CssBaseline } from '@mui/material';
-import { ThemeProvider } from '@mui/material/styles';
-import { darkTheme } from './themes/themes';
 import { AppRouter } from './routers/AppRouter';
+import ThemeApp from './theme/ThemeApp';
 
 function JournalApp() {
     return (
-        <ThemeProvider theme={darkTheme}>
-            <CssBaseline />
+        <ThemeApp>
             <AppRouter />
-        </ThemeProvider>
+        </ThemeApp>
     );
 }
 
