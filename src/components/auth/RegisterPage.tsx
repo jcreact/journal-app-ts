@@ -23,6 +23,8 @@ export const RegisterPage = () => {
                             label="Nombre"
                             placeholder="Nombre Apellido"
                             autoComplete="none"
+                            autoFocus
+                            autoCapitalize="words"
                         />
                     </FormControl>
                     <FormControl fullWidth sx={{ marginTop: 2 }}>

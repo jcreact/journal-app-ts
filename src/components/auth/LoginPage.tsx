@@ -24,6 +24,7 @@ export const LoginPage = () => {
                             label="Correo"
                             placeholder="correo@mail.com"
                             autoComplete="off"
+                            autoFocus
                         />
                     </FormControl>
                     <FormControl fullWidth sx={{ marginTop: 2 }}>
