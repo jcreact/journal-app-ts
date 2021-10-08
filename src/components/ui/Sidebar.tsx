@@ -1,6 +1,7 @@
-import { Drawer, List, ListItem, ListItemText, Box, ListItemIcon, Divider } from '@mui/material';
+import { Drawer, Button } from '@mui/material';
 import EventNoteIcon from '@mui/icons-material/EventNote';
 import { JournalEntries } from '../journal/JournalEntries';
+import { Stack } from '@mui/material';
 
 interface SidebarProps {
     drawerWidth: number;
@@ -16,18 +17,18 @@ export const Sidebar = ({ drawerWidth }: SidebarProps) => {
                 [`& .MuiDrawer-paper`]: { width: drawerWidth, top: 'auto' },
             }}
         >
-            <Box>
-                <List>
-                    <ListItem button>
-                        <ListItemIcon>
-                            <EventNoteIcon />
-                        </ListItemIcon>
-                        <ListItemText primary="Agregar Evento" />
-                    </ListItem>
-                    <Divider sx={{ my: 1 }} />
-                    <JournalEntries />
-                </List>
-            </Box>
+            <Stack>
+                <Button
+                    color="inherit"
+                    size="large"
+                    fullWidth
+                    startIcon={<EventNoteIcon />}
+                    sx={{ height: '52px' }}
+                >
+                    Agregar Evento
+                </Button>
+                <JournalEntries />
+            </Stack>
         </Drawer>
     );
 };
