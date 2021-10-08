@@ -5,18 +5,10 @@ export const JournalEntry = () => {
     const show = Math.trunc(Math.random() * 10) % 2 === 0;
 
     return (
-        <Box
-            display="flex"
-            alignItems="center"
-            sx={{ borderTop: 1, borderBottom: 1, borderColor: 'divider' }}
-            mb={1}
-            p={1}
-            className="pointer"
-        >
+        <Box display="flex" alignItems="center" p={1} className="pointer">
             <Badge
                 color="success"
-                // variant="dot"
-                overlap="circular"
+                variant="dot"
                 anchorOrigin={{
                     vertical: 'top',
                     horizontal: 'left',
