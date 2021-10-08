@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { Box } from '@mui/material';
+import { Box, Toolbar } from '@mui/material';
 
 import { Header } from '../ui/Header';
 import { Sidebar } from '../ui/Sidebar';
 
 import { NothingSelected } from './NothingSelected';
+import { Note } from '../notes/Note';
 
 export const JournalPage = () => {
     const [drawerWidth] = useState(420);
@@ -25,10 +26,13 @@ export const JournalPage = () => {
                 <Header />
             </Box>
             <Box component="aside" sx={{ gridArea: 'sidebar', width: drawerWidth }}>
+                <Toolbar />
                 <Sidebar drawerWidth={drawerWidth} />
             </Box>
             <Box component="main" sx={{ gridArea: 'main' }}>
-                <NothingSelected />
+                <Toolbar />
+                {/* <NothingSelected /> */}
+                <Note />
             </Box>
         </Box>
     );
