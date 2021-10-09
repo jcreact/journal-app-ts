@@ -3,7 +3,7 @@ interface AuthState {
     name: string;
 }
 
-type AuthReducerType =
+export type AuthReducerType =
     | { type: '[auth] login'; payload: { uid: string; name: string } }
     | { type: '[auth] logout' };
 
