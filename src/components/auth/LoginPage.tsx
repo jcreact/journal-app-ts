@@ -1,15 +1,38 @@
 import { FormEvent } from 'react';
 import { Link } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import { Button, Card, CardContent, CardHeader, FormControl, Grid, TextField } from '@mui/material';
 import GoogleIcon from '@mui/icons-material/Google';
 import LoginIcon from '@mui/icons-material/Login';
 import AppRegistrationIcon from '@mui/icons-material/AppRegistration';
 
+import { loginMailPassword, loginWithGoogle } from '../../actions/auth';
+
 import { PasswordField } from './PasswordField';
+import { useForm } from '../../hooks/useForm';
+
+interface LoginForm {
+    email: string;
+    password: string;
+}
 
 export const LoginPage = () => {
+    const dispatch = useDispatch();
+
+    const { values, handleInputChange } = useForm<LoginForm>({
+        email: 'palmahn@gmail',
+        password: 'JcPalmaGMail900$',
+    });
+
+    const { email, password } = values;
+
+    const handleGoogleLogin = () => {
+        dispatch(loginWithGoogle());
+    };
+
     const handleSubmit = (ev: FormEvent<HTMLFormElement>) => {
         ev.preventDefault();
+        dispatch(loginMailPassword(email, password));
     };
 
     return (
@@ -25,10 +48,16 @@ export const LoginPage = () => {
                             placeholder="correo@mail.com"
                             autoComplete="off"
                             autoFocus
+                            value={email}
+                            onChange={handleInputChange}
                         />
                     </FormControl>
                     <FormControl fullWidth sx={{ marginTop: 2 }}>
-                        <PasswordField name="password" />
+                        <PasswordField
+                            name="password"
+                            value={password}
+                            onChange={handleInputChange}
+                        />
                     </FormControl>
                 </CardContent>
                 <Grid container sx={{ px: 2, mb: 2 }} spacing={2}>
@@ -48,6 +77,7 @@ export const LoginPage = () => {
                             color="success"
                             fullWidth
                             startIcon={<GoogleIcon />}
+                            onClick={handleGoogleLogin}
                         >
                             Google
                         </Button>
