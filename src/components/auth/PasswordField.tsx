@@ -1,31 +1,26 @@
 import { MouseEvent, useState } from 'react';
-import { IconButton, InputAdornment, TextField } from '@mui/material';
+import { IconButton, InputAdornment, TextField, TextFieldProps } from '@mui/material';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
-interface PasswordFieldProps {
-    name: string;
-    label?: string;
-    placeholder?: string;
-}
-
-export const PasswordField = ({ name, label, placeholder }: PasswordFieldProps) => {
+export const PasswordField = (props: TextFieldProps) => {
     const [show, setShow] = useState(false);
 
     const handleMouseDownPassword = (ev: MouseEvent<HTMLButtonElement>) => {
+        console.log('mousedown');
         ev.preventDefault();
     };
 
-    const handleClickShowPassword = (_: MouseEvent<HTMLButtonElement>) => {
+    const handleClickShowPassword = () => {
         setShow((show) => !show);
     };
 
     return (
         <TextField
             type={show ? 'text' : 'password'}
-            name={name}
-            label={label || 'Contraseña'}
-            placeholder={placeholder || '*******'}
+            label={props.label || 'Contraseña'}
+            placeholder={props.placeholder || '*******'}
+            {...props}
             InputProps={{
                 endAdornment: (
                     <InputAdornment position="end">
@@ -33,6 +28,7 @@ export const PasswordField = ({ name, label, placeholder }: PasswordFieldProps) 
                             onClick={handleClickShowPassword}
                             onMouseDown={handleMouseDownPassword}
                             color="info"
+                            edge="end"
                         >
                             {show ? <VisibilityOff /> : <Visibility />}
                         </IconButton>
