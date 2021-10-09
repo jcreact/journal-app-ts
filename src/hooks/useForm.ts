@@ -1,4 +1,5 @@
 import { ChangeEvent, useState, FormEvent } from 'react';
+import validator from 'validator';
 
 export const useForm = <FormType>(initialState: FormType) => {
     const [values, setValues] = useState(initialState);
@@ -32,7 +33,7 @@ export const useForm = <FormType>(initialState: FormType) => {
     };
 
     const checkMail = (email: string): boolean => {
-        return /^[A-Za-z0-9ñÑ._]+@[a-z0-9.-]{2,}\.[a-z]{2,}$/.test(email);
+        return !validator.isEmpty(email) && validator.isEmail(email);
     };
 
     return {
