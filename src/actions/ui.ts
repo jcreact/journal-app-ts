@@ -6,3 +6,6 @@ export const setErrorAction = (err: string): UIReducerAction => ({
 });
 
 export const clearErrorAction = (): UIReducerAction => ({ type: '[ui] clear error' });
+
+export const startLoading = (): UIReducerAction => ({ type: '[ui] start loading' });
+export const finishLoading = (): UIReducerAction => ({ type: '[ui] finish loading' });

@@ -6,8 +6,8 @@ interface UIState {
 export type UIReducerAction =
     | { type: '[ui] set error'; payload: string }
     | { type: '[ui] clear error' }
-    | { type: '[ui] loading' }
-    | { type: '[ui] no loading' };
+    | { type: '[ui] start loading' }
+    | { type: '[ui] finish loading' };
 
 export const uiReducer = (state: UIState = {} as UIState, action: UIReducerAction): UIState => {
     switch (action.type) {
@@ -20,6 +20,16 @@ export const uiReducer = (state: UIState = {} as UIState, action: UIReducerActio
             return {
                 ...state,
                 errMessage: null,
+            };
+        case '[ui] start loading':
+            return {
+                ...state,
+                loading: true,
+            };
+        case '[ui] finish loading':
+            return {
+                ...state,
+                loading: false,
             };
         default:
             return state;
