@@ -6,6 +6,7 @@ import LoginIcon from '@mui/icons-material/Login';
 import AppRegistrationIcon from '@mui/icons-material/AppRegistration';
 
 import { setErrorAction, clearErrorAction } from '../../actions/ui';
+import { registerWithEmailAndPassword } from '../../actions/auth';
 
 import { PasswordField } from './PasswordField';
 import { useForm } from '../../hooks/useForm';
@@ -24,20 +25,20 @@ export const RegisterPage = () => {
         useForm<RegisterForm>({
             name: 'José Palma',
             email: 'palma@correo.com',
-            password: '1234',
-            password2: '1234',
+            password: '123456',
+            password2: '123456',
         });
 
     const { name, email, password, password2 } = values;
 
     const handleSubmit = (ev: FormEvent<HTMLFormElement>) => {
         ev.preventDefault();
-        console.log('handleSubmit');
 
         if (isNotValidName || isNotValidMail || isNotValidPassword || isNotValidPassword2) {
             return;
         }
         dispatch(clearErrorAction());
+        dispatch(registerWithEmailAndPassword(name, email, password));
     };
 
     const isNotValidName = useMemo<boolean>(
