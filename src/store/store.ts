@@ -12,5 +12,7 @@ const reducers = combineReducers({
     ui: uiReducer,
 });
 
+export type AppState = ReturnType<typeof reducers>;
+
 // Creación del store global de la aplicación.
 export const store = createStore(reducers, composeEnhancers(applyMiddleware(thunk)));
