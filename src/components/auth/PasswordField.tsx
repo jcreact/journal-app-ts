@@ -27,8 +27,9 @@ export const PasswordField = (props: TextFieldProps) => {
                         <IconButton
                             onClick={handleClickShowPassword}
                             onMouseDown={handleMouseDownPassword}
-                            color={props.error ? 'error' : 'info'}
+                            color={props.error ? 'error' : props.color}
                             edge="end"
+                            disabled={props.disabled}
                         >
                             {show ? <VisibilityOff /> : <Visibility />}
                         </IconButton>
