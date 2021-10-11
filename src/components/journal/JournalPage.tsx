@@ -31,7 +31,7 @@ export const JournalPage = () => {
             </Box>
             <Box component="main" sx={{ gridArea: 'main' }}>
                 <Toolbar />
-                {/* <NothingSelected /> */}
+                {false && <NothingSelected />}
                 <Note />
             </Box>
         </Box>

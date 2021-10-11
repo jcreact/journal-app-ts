@@ -1,7 +1,19 @@
-import { FormEvent } from 'react';
+import { FormEvent, useMemo, useRef, useEffect, useState, SyntheticEvent } from 'react';
 import { Link } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { Button, Card, CardContent, CardHeader, FormControl, Grid, TextField } from '@mui/material';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+    Alert,
+    Button,
+    Card,
+    CardContent,
+    CardHeader,
+    CircularProgress,
+    FormControl,
+    Grid,
+    Grow,
+    Snackbar,
+    TextField,
+} from '@mui/material';
 import GoogleIcon from '@mui/icons-material/Google';
 import LoginIcon from '@mui/icons-material/Login';
 import AppRegistrationIcon from '@mui/icons-material/AppRegistration';
@@ -10,6 +22,8 @@ import { loginMailPassword, loginWithGoogle } from '../../actions/auth';
 
 import { PasswordField } from './PasswordField';
 import { useForm } from '../../hooks/useForm';
+import { AppState } from '../../store/store';
+import { clearErrorAction } from '../../actions/ui';
 
 interface LoginForm {
     email: string;
@@ -18,10 +32,13 @@ interface LoginForm {
 
 export const LoginPage = () => {
     const dispatch = useDispatch();
+    const { loading, errMessage } = useSelector((state: AppState) => state.ui);
+    const emailRef = useRef<HTMLInputElement>();
+    const passRef = useRef<HTMLInputElement>();
 
-    const { values, handleInputChange } = useForm<LoginForm>({
-        email: 'palmahn@gmail',
-        password: 'JcPalmaGMail900$',
+    const { values, handleInputChange, checkMail, touched, toucheMe } = useForm<LoginForm>({
+        email: 'palma@correo.com',
+        password: '123456',
     });
 
     const { email, password } = values;
@@ -35,28 +52,65 @@ export const LoginPage = () => {
         dispatch(loginMailPassword(email, password));
     };
 
+    const isNotValidMail = useMemo(
+        () => touched.email && (email.length <= 0 || !checkMail(email)),
+        [email, touched.email, checkMail]
+    );
+
+    const isNotValidPassword = useMemo(
+        () => touched.password && password.length <= 0,
+        [password, touched.password]
+    );
+
+    useEffect(() => {
+        if (isNotValidMail && emailRef.current) {
+            return emailRef.current.focus();
+        } else if (isNotValidPassword && passRef.current) {
+            return passRef.current.focus();
+        }
+    }, [isNotValidMail, isNotValidPassword]);
+
+    useEffect(() => {
+        errMessage && emailRef.current?.focus();
+        setTimeout(() => errMessage && dispatch(clearErrorAction()), 2000);
+    }, [errMessage, dispatch]);
+
+    const handleClose = (ev?: SyntheticEvent, reason?: string) => {
+        errMessage && dispatch(clearErrorAction());
+    };
+
     return (
         <Card sx={{ border: 1, borderColor: 'divider' }}>
             <CardHeader title="Inicio de Sesión" sx={{ textAlign: 'center' }} />
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} onInvalid={toucheMe}>
                 <CardContent>
                     <FormControl fullWidth>
                         <TextField
+                            inputRef={emailRef}
                             type="text"
                             name="email"
                             label="Correo"
                             placeholder="correo@mail.com"
                             autoComplete="off"
+                            required
                             autoFocus
                             value={email}
                             onChange={handleInputChange}
+                            error={isNotValidMail}
+                            helperText={isNotValidMail && 'El correo es requerido.'}
+                            disabled={loading}
                         />
                     </FormControl>
                     <FormControl fullWidth sx={{ marginTop: 2 }}>
                         <PasswordField
+                            inputRef={passRef}
                             name="password"
+                            required
                             value={password}
                             onChange={handleInputChange}
+                            error={isNotValidPassword}
+                            helperText={isNotValidPassword && 'La contraseña es requerida.'}
+                            disabled={loading}
                         />
                     </FormControl>
                 </CardContent>
@@ -66,7 +120,8 @@ export const LoginPage = () => {
                             type="submit"
                             variant="contained"
                             fullWidth
-                            startIcon={<LoginIcon />}
+                            startIcon={loading ? <CircularProgress size={20} /> : <LoginIcon />}
+                            disabled={loading}
                         >
                             Ingresar
                         </Button>
@@ -78,6 +133,7 @@ export const LoginPage = () => {
                             fullWidth
                             startIcon={<GoogleIcon />}
                             onClick={handleGoogleLogin}
+                            disabled={loading}
                         >
                             Google
                         </Button>
@@ -88,6 +144,7 @@ export const LoginPage = () => {
                             component={Link}
                             color="inherit"
                             fullWidth
+                            disabled={loading}
                             endIcon={<AppRegistrationIcon />}
                             to="/auth/register"
                         >
@@ -96,6 +153,11 @@ export const LoginPage = () => {
                     </Grid>
                 </Grid>
             </form>
+            <Snackbar open={errMessage ? true : false} TransitionComponent={Grow}>
+                <Alert severity="error" variant="outlined" onClose={handleClose}>
+                    {errMessage}
+                </Alert>
+            </Snackbar>
         </Card>
     );
 };
