@@ -23,7 +23,7 @@ export const loginMailPassword = (email: string, password: string) => {
             const { user } = await signInWithEmailAndPassword(getAuth(), email, password);
             dispatch(loginAction(user.uid, user.displayName || ''));
         } catch (err) {
-            dispatch(setErrorAction('Credenciales invalidas'));
+            dispatch(setErrorAction('¡Credenciales invalidas!'));
         } finally {
             dispatch(finishLoading());
         }
@@ -35,13 +35,18 @@ export const registerWithEmailAndPassword = (
     email: string,
     password: string
 ) => {
-    return (dispatch: Dispatch<AuthReducerType>) => {
-        createUserWithEmailAndPassword(getAuth(), email, password).then(
-            async ({ user }: UserCredential) => {
-                await updateProfile(user, { displayName });
-                dispatch(loginAction(user.uid, user.displayName || ''));
-            }
-        );
+    return async (dispatch: Dispatch<AuthReducerType | UIReducerAction>) => {
+        dispatch(clearErrorAction());
+        dispatch(startLoading());
+        try {
+            const { user } = await createUserWithEmailAndPassword(getAuth(), email, password);
+            await updateProfile(user, { displayName });
+            dispatch(loginAction(user.uid, user.displayName || ''));
+        } catch (err) {
+            dispatch(setErrorAction('¡El correo ya está registrado!'));
+        } finally {
+            dispatch(finishLoading());
+        }
     };
 };
 

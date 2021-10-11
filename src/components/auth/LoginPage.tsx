@@ -1,4 +1,4 @@
-import { FormEvent, useMemo, useRef, useEffect, SyntheticEvent } from 'react';
+import { FormEvent, useMemo, useRef, useEffect, SyntheticEvent, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -33,6 +33,7 @@ interface LoginForm {
 export const LoginPage = () => {
     const dispatch = useDispatch();
     const { loading, errMessage } = useSelector((state: AppState) => state.ui);
+    const [showAlertError, setShowAlertError] = useState(false);
     const emailRef = useRef<HTMLInputElement>();
     const passRef = useRef<HTMLInputElement>();
 
@@ -44,11 +45,13 @@ export const LoginPage = () => {
     const { email, password } = values;
 
     const handleGoogleLogin = () => {
+        dispatch(clearErrorAction());
         dispatch(loginWithGoogle());
     };
 
     const handleSubmit = (ev: FormEvent<HTMLFormElement>) => {
         ev.preventDefault();
+        dispatch(clearErrorAction());
         dispatch(loginMailPassword(email, password));
     };
 
@@ -71,12 +74,17 @@ export const LoginPage = () => {
     }, [isNotValidMail, isNotValidPassword]);
 
     useEffect(() => {
-        errMessage && emailRef.current?.focus();
-        setTimeout(() => errMessage && dispatch(clearErrorAction()), 2000);
-    }, [errMessage, dispatch]);
+        if (errMessage === '¡Credenciales invalidas!') {
+            setShowAlertError(true);
+            setTimeout(() => emailRef.current?.focus(), 100);
+        }
+    }, [errMessage, setShowAlertError, dispatch]);
 
     const handleClose = (ev?: SyntheticEvent, reason?: string) => {
-        errMessage && dispatch(clearErrorAction());
+        if (reason === 'clickaway') {
+            return;
+        }
+        setShowAlertError(false);
     };
 
     return (
@@ -153,7 +161,12 @@ export const LoginPage = () => {
                     </Grid>
                 </Grid>
             </form>
-            <Snackbar open={errMessage ? true : false} TransitionComponent={Grow}>
+            <Snackbar
+                open={showAlertError}
+                TransitionComponent={Grow}
+                autoHideDuration={2500}
+                onClose={handleClose}
+            >
                 <Alert severity="error" variant="outlined" onClose={handleClose}>
                     {errMessage}
                 </Alert>

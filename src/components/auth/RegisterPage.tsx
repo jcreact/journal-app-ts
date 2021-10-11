@@ -1,10 +1,23 @@
-import { FormEvent, useMemo, useEffect } from 'react';
+import { FormEvent, useMemo, useEffect, useRef, SyntheticEvent, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { Card, CardContent, CardHeader, FormControl, TextField, Grid, Button } from '@mui/material';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+    Card,
+    CardContent,
+    CardHeader,
+    FormControl,
+    TextField,
+    Grid,
+    Button,
+    CircularProgress,
+    Snackbar,
+    Alert,
+    Grow,
+} from '@mui/material';
 import LoginIcon from '@mui/icons-material/Login';
 import AppRegistrationIcon from '@mui/icons-material/AppRegistration';
 
+import { AppState } from '../../store/store';
 import { setErrorAction, clearErrorAction } from '../../actions/ui';
 import { registerWithEmailAndPassword } from '../../actions/auth';
 
@@ -20,6 +33,9 @@ interface RegisterForm {
 
 export const RegisterPage = () => {
     const dispatch = useDispatch();
+    const { loading, errMessage } = useSelector((state: AppState) => state.ui);
+    const [showAlertError, setShowAlertError] = useState(false);
+    const emailRef = useRef<HTMLInputElement>();
 
     const { values, handleInputChange, touched, toucheMe, touchedAll, checkMail } =
         useForm<RegisterForm>({
@@ -80,6 +96,20 @@ export const RegisterPage = () => {
         isNotValidPassword2 && dispatch(setErrorAction('Las contraseñas no coinciden'));
     }, [isNotValidPassword2, dispatch]);
 
+    useEffect(() => {
+        if (errMessage === '¡El correo ya está registrado!') {
+            setShowAlertError(true);
+            setTimeout(() => emailRef.current?.focus(), 100);
+        }
+    }, [errMessage, setShowAlertError, dispatch]);
+
+    const handleClose = (ev?: SyntheticEvent, reason?: string) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setShowAlertError(false);
+    };
+
     return (
         <Card sx={{ border: 1, borderColor: 'divider' }}>
             <CardHeader title="Registro de Cuenta" sx={{ textAlign: 'center' }} />
@@ -99,10 +129,12 @@ export const RegisterPage = () => {
                             onChange={handleInputChange}
                             error={isNotValidName}
                             helperText={isNotValidName && 'Nombre es requerido.'}
+                            disabled={loading}
                         />
                     </FormControl>
                     <FormControl fullWidth sx={{ marginTop: 2 }}>
                         <TextField
+                            inputRef={emailRef}
                             type="text"
                             name="email"
                             label="Correo"
@@ -113,6 +145,7 @@ export const RegisterPage = () => {
                             onChange={handleInputChange}
                             error={isNotValidMail}
                             helperText={isNotValidMail && 'Correo es requerido.'}
+                            disabled={loading}
                         />
                     </FormControl>
                     <FormControl fullWidth sx={{ marginTop: 2 }}>
@@ -124,6 +157,7 @@ export const RegisterPage = () => {
                             onChange={handleInputChange}
                             error={isNotValidPassword}
                             helperText={isNotValidPassword && 'Las contraseñas no coinciden'}
+                            disabled={loading}
                         />
                     </FormControl>
                     <FormControl fullWidth sx={{ marginTop: 2 }}>
@@ -135,6 +169,7 @@ export const RegisterPage = () => {
                             onChange={handleInputChange}
                             error={isNotValidPassword2}
                             helperText={isNotValidPassword2 && 'Las contraseñas no coinciden'}
+                            disabled={loading}
                         />
                     </FormControl>
                 </CardContent>
@@ -145,7 +180,10 @@ export const RegisterPage = () => {
                             type="submit"
                             variant="contained"
                             fullWidth
-                            endIcon={<AppRegistrationIcon />}
+                            endIcon={
+                                loading ? <CircularProgress size={20} /> : <AppRegistrationIcon />
+                            }
+                            disabled={loading}
                         >
                             Registrar
                         </Button>
@@ -157,12 +195,23 @@ export const RegisterPage = () => {
                             fullWidth
                             startIcon={<LoginIcon />}
                             to="/auth/login"
+                            disabled={loading}
                         >
                             ¡Inicia Sesión!
                         </Button>
                     </Grid>
                 </Grid>
             </form>
+            <Snackbar
+                open={showAlertError}
+                TransitionComponent={Grow}
+                autoHideDuration={2500}
+                onClose={handleClose}
+            >
+                <Alert severity="error" variant="outlined" onClose={handleClose}>
+                    {errMessage}
+                </Alert>
+            </Snackbar>
         </Card>
     );
 };
