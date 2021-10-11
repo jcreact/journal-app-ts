@@ -4,14 +4,16 @@ import {
     getAuth,
     signInWithEmailAndPassword,
     signInWithPopup,
+    signOut,
     updateProfile,
     UserCredential,
 } from 'firebase/auth';
 
 import { googleProvider } from '../firebase/firebase.config';
 import { AuthReducerType } from '../reducers/authReducer';
-import { startLoading, finishLoading, setErrorAction, clearErrorAction } from './ui';
 import { UIReducerAction } from '../reducers/uiReducer';
+
+import { startLoading, finishLoading, setErrorAction, clearErrorAction } from './ui';
 
 export const loginMailPassword = (email: string, password: string) => {
     return async (dispatch: Dispatch<AuthReducerType | UIReducerAction>) => {
@@ -58,3 +60,14 @@ export const loginAction = (uid: string, name: string): AuthReducerType => ({
         name,
     },
 });
+
+export const logout = () => {
+    return async (dispatch: Dispatch<AuthReducerType>) => {
+        try {
+            await signOut(getAuth());
+        } catch (err) {}
+        dispatch(logoutAction());
+    };
+};
+
+export const logoutAction = (): AuthReducerType => ({ type: '[auth] logout' });
